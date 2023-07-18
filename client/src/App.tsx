@@ -5,16 +5,16 @@ import XmlUpload from './components/XmlUpload';
 const App: React.FC = () => {
   return (
     <div className="App">
-      <h2>DCC XML files.</h2>
+      <h2>DCC XML files - Websocket</h2>
       <XmlUpload />
       <br />
-      <h2>Excel files.</h2>
+      <h2>Excel files - HTTP Post</h2>
       <ExcelUpload />
       <br />
       <br />
       <p>
-        This is a toolkit to combine different document types together into a
-        consolidated csv file. <br />
+        Toolkit to combine different document types together into a consolidated
+        csv file. <br />
         For excel files: enter the name of the sheets you'd like to combine.
         Alternatively enter "1" for the first sheet of each file <br />
       </p>

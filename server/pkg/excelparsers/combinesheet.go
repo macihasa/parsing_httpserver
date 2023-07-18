@@ -92,6 +92,9 @@ func reader(fileheader *multipart.FileHeader, sheetname string, rowsch chan []st
 			log.Println("Unable to read row from sheet:", sheetname, err)
 			continue
 		}
+		if len(row) == 0 {
+			continue
+		}
 		rowsch <- row
 	}
 	<-limiter
