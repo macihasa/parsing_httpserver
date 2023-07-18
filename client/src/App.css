@@ -1,0 +1,41 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.UploadSegment {
+  display: flex;
+  justify-content: space-between;
+}
+
+.UploadButtons {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+}
+
+.UploadButtons input {
+  width: 250px;
+}
+
+.UploadButtons a {
+  margin-top: 13px;
+  color: white;
+}
+
+.UploadButtons a:hover {
+  color: #ccc;
+}
+
+.Logging {
+  display: flex;
+  flex-direction: column;
+  min-width: 500px;
+  margin-right: 20vw;
+}
+
+.Logging h3 {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
