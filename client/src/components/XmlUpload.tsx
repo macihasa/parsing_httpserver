@@ -46,13 +46,15 @@ const XmlUpload = () => {
     };
 
     socket.onmessage = (event) => {
-      setServerProgress(event.data);
+      setServerProgress(String(event.data));
     };
 
     socket.onclose = () => {
       console.log('Connection closed: ');
       setServerProgress('Connection closed, requesting file');
-      requestFile();
+      requestFile().catch((err) => {
+        console.log(err);
+      });
     };
   }
 
@@ -77,6 +79,7 @@ const XmlUpload = () => {
           <input
             type="file"
             multiple={true}
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             webkitdirectory=""
             onChange={handleFolderSelection}

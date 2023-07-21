@@ -14,8 +14,18 @@ const ExcelUpload = () => {
     console.log(files);
   }
 
-  async function handleExcelUpload() {
-    let formdata = new FormData();
+  function handleExcelUpload() {
+    requestFile().catch((err) => {
+      console.log(err);
+    });
+  }
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSheetName(event.target.value);
+  };
+
+  const requestFile = async () => {
+    const formdata = new FormData();
 
     if (selectedFolder == null) {
       setProgress('Please select files');
@@ -28,6 +38,8 @@ const ExcelUpload = () => {
 
     console.log('http://localhost:5000/excel/' + sheetName);
 
+    setIsUploading(true);
+    setServerProgress('Uploading to server...');
     const res = await fetch('http://localhost:5000/excel/' + sheetName, {
       method: 'POST',
       body: formdata,
@@ -35,24 +47,7 @@ const ExcelUpload = () => {
 
     const data = await res.blob();
     setFile(new File([data], 'test.csv'));
-  }
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSheetName(event.target.value);
-  };
-
-  const requestFile = async () => {
-    console.log('Requesting file');
-
-    const response = await fetch('http://localhost:5000/dcecstmsmsg/getfile', {
-      method: 'GET',
-    });
-
-    const blob = await response.blob();
-
-    // Log content of file
-    setFile(new File([blob], 'test.csv'));
-    console.log(file);
+    setServerProgress('Server finished processing: ');
   };
 
   return (
@@ -62,10 +57,12 @@ const ExcelUpload = () => {
           <input
             type="file"
             multiple={true}
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             webkitdirectory=""
             onChange={handleFolderSelection}
           />
+
           <button onClick={handleExcelUpload}>
             {isUploading ? 'Uploading...' : 'Submit'}
           </button>
