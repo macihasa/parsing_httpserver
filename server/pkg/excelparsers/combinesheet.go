@@ -13,12 +13,13 @@ import (
 
 const MAX_NUM_GOROUTINES = 10
 
-func CombineSheet(form *multipart.Form, rowsch chan []string, sheetname string, finished chan<- bool) {
-
+func CombineSheet(form *multipart.Form, sheetname string) {
 	readwg := new(sync.WaitGroup)
 	writewg := new(sync.WaitGroup)
 
 	limiter := make(chan int, MAX_NUM_GOROUTINES)
+	rowsch := make(chan []string, 1024)
+
 
 	writewg.Add(1)
 	go writer("OutputXL", rowsch, writewg)
@@ -47,8 +48,6 @@ func CombineSheet(form *multipart.Form, rowsch chan []string, sheetname string, 
 	writewg.Wait()
 
 	close(limiter)
-
-	finished <- true
 }
 
 func reader(fileheader *multipart.FileHeader, sheetname string, rowsch chan []string, limiter chan int, readwg *sync.WaitGroup) {

@@ -22,7 +22,7 @@ var Upgrader = websocket.Upgrader{
 
 	// Error handling
 	Error: func(w http.ResponseWriter, r *http.Request, status int, reason error) {
-		log.Println(reason)
+		log.Println("Upgrader error, status: ", status, reason)
 	},
 }
 
@@ -74,6 +74,7 @@ func DCCXML(w http.ResponseWriter, r *http.Request) {
 		}
 		msgchan <- msg
 	}
+	log.Println("exited loop, routine is finished.")
 }
 
 func Excel(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +84,7 @@ func Excel(w http.ResponseWriter, r *http.Request) {
 	sheetname := mux.Vars(r)["sheet"]
 	log.Println("Client request: Excel.\tSheetname:", sheetname)
 
-	err := r.ParseMultipartForm(2 << 30)
+	err := r.ParseMultipartForm(2 << 30) // Bitshifting 30 times turns the number into gigabytes - << 30 = GB, 20 = 1MB, 10 = 1KB
 	if err != nil {
 		log.Println("unable to parse multipart form", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -91,30 +92,16 @@ func Excel(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rowsch := make(chan []string, 1024)
-	finished := make(chan bool)
-
 	form := r.MultipartForm
 
-	go excelparsers.CombineSheet(form, rowsch, sheetname, finished)
-
-	<-finished
+	excelparsers.CombineSheet(form, sheetname)
 	log.Println("Parsing finished")
 
-	filebytes, err := os.ReadFile("./OutputXL.csv")
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("File size: ", len(filebytes))
-
-	w.Header().Set("Content-Type", "text/csv")
-	w.Write(filebytes)
-	log.Println("File served..")
-
+	serveCsv("./OutputXL.csv", w)
 }
 
-func ServeCSVfile(w http.ResponseWriter, r *http.Request) {
-	log.Println("Client request: ServeCSVfile")
+func HandleCsvRequest(w http.ResponseWriter, r *http.Request) {
+	log.Println("Client request csv file")
 	// Handle preflight request
 	if r.Method == "OPTIONS" {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -122,15 +109,18 @@ func ServeCSVfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	serveCsv("./Output.csv", w)
+}
+
+func serveCsv(filename string, w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
-
-	filebytes, err := os.ReadFile("./Output.csv")
-	if err != nil {
-		log.Println(err)
-	}
-	log.Println("File size: ", len(filebytes))
-
 	w.Header().Set("Content-Type", "text/csv")
+
+	filebytes, err := os.ReadFile(filename)
+	if err != nil {
+		log.Println("Unable to read file", err)
+	}
+	w.WriteHeader(http.StatusOK)
+	log.Printf("Serving file: %s\tFilesize: %v", filename, len(filebytes))
 	w.Write(filebytes)
-	log.Println("File served..")
 }

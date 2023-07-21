@@ -167,9 +167,9 @@ func writer(fileName string, rowsch <-chan []string, wg *sync.WaitGroup) {
 // reader is run as several Goroutines opening and parsing the contents of XML files to the rows channel
 func reader(msgch <-chan []byte, rowsch chan<- []string, maps *safeMaps, wg *sync.WaitGroup) {
 	defer wg.Done()
-	var cstmsInterface CstmsInterface
 	for msg := range msgch {
-		err := xml.Unmarshal(msg, &cstmsInterface)
+		cstmsInterface := new(CstmsInterface)
+		err := xml.Unmarshal(msg, cstmsInterface)
 		if err != nil {
 			log.Println("Unable to unmarshal msg ", err)
 		}
@@ -190,7 +190,7 @@ func reader(msgch <-chan []byte, rowsch chan<- []string, maps *safeMaps, wg *syn
 						transType = datEl.Val
 					}
 				}
-				rowsch <- []string{
+					rowsch <- []string{
 					shp.HAWB,
 					shp.GrossWgt,
 					shp.ActWgt,
