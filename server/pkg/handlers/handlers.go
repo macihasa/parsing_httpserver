@@ -35,6 +35,12 @@ func Health(w http.ResponseWriter, r *http.Request) {
 }
 
 func DCCXML(w http.ResponseWriter, r *http.Request) {
+	// Handle preflight request
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		return
+	}
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	conn, err := Upgrader.Upgrade(w, r, nil)
@@ -74,17 +80,24 @@ func DCCXML(w http.ResponseWriter, r *http.Request) {
 		}
 		msgchan <- msg
 	}
+	w.WriteHeader(http.StatusOK)
 	log.Println("exited loop, routine is finished.")
 }
 
 func Excel(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	// Handle preflight request
+	if r.Method == "OPTIONS" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+		w.WriteHeader(http.StatusOK)
+		return
+	}
+
 
 	sheetname := mux.Vars(r)["sheet"]
 	log.Println("Client request: Excel.\tSheetname:", sheetname)
 
-	err := r.ParseMultipartForm(2 << 30) // Bitshifting 30 times turns the number into gigabytes - << 30 = GB, 20 = 1MB, 10 = 1KB
+	err := r.ParseMultipartForm(2 << 30) // 30=GB, 20=MB, 10=KB
 	if err != nil {
 		log.Println("unable to parse multipart form", err)
 		w.WriteHeader(http.StatusBadRequest)
@@ -114,6 +127,7 @@ func HandleCsvRequest(w http.ResponseWriter, r *http.Request) {
 
 func serveCsv(filename string, w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/csv")
 
 	filebytes, err := os.ReadFile(filename)

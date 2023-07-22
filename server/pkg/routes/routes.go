@@ -10,7 +10,7 @@ func Init() *mux.Router {
 	r.HandleFunc("/health", handlers.Health).Methods("GET")
 	r.HandleFunc("/dcecstmsmsg", handlers.DCCXML).Methods("GET", "POST")
 	r.HandleFunc("/dcecstmsmsg/getfile", handlers.HandleCsvRequest).Methods("GET", "OPTIONS")
-	r.HandleFunc("/excel/{sheet}", handlers.Excel).Methods("POST")
+	r.HandleFunc("/excel/{sheet}", handlers.Excel).Methods("POST", "OPTIONS")
 
 	return r
 }
