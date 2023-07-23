@@ -36,11 +36,11 @@ const ExcelUpload = () => {
       formdata.append('files', selectedFolder[i], selectedFolder[i].name);
     }
 
-    console.log('http://localhost:5000/excel/' + sheetName);
+    console.log('http://macihasa.com:5000/excel/' + sheetName);
 
     setIsUploading(true);
     setServerProgress('Uploading to server...');
-    const res = await fetch('http://localhost:5000/excel/' + sheetName, {
+    const res = await fetch('http://macihasa.com:5000/excel/' + sheetName, {
       method: 'POST',
       body: formdata,
     });

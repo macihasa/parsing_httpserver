@@ -21,7 +21,7 @@ const XmlUpload = () => {
 
     setIsUploading(true);
 
-    const socket = new WebSocket('ws://localhost:5000/dcecstmsmsg');
+    const socket = new WebSocket('ws://macihasa.com:5000/dcecstmsmsg');
 
     socket.onopen = () => {
       // Send file to server
@@ -61,9 +61,12 @@ const XmlUpload = () => {
   const requestFile = async () => {
     console.log('Requesting file');
 
-    const response = await fetch('http://localhost:5000/dcecstmsmsg/getfile', {
-      method: 'GET',
-    });
+    const response = await fetch(
+      'http://macihasa.com:5000/dcecstmsmsg/getfile',
+      {
+        method: 'GET',
+      }
+    );
 
     const blob = await response.blob();
 

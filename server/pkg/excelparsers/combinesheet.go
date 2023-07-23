@@ -11,7 +11,7 @@ import (
 	"github.com/xuri/excelize/v2"
 )
 
-const MAX_NUM_GOROUTINES = 10
+const MAX_NUM_GOROUTINES = 2
 
 func CombineSheet(form *multipart.Form, sheetname string) {
 	readwg := new(sync.WaitGroup)

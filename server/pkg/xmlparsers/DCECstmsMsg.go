@@ -109,7 +109,7 @@ type safeMaps struct {
 }
 
 // Limits the amount of reader routines that's active at one time.
-const MAX_NUM_GOROUTINES = 16
+const MAX_NUM_GOROUTINES = 4
 
 // Main program iterating the folder "root" and sending off the routines
 func DCECustomsMsg(fileName string, msgch <-chan []byte, finished chan<- bool) {
